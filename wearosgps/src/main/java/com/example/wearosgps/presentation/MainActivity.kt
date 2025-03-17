@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import org.json.JSONObject
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 
 class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -41,8 +46,26 @@ class MainActivity : ComponentActivity() {
                 location?.let {
                     latitude = it.latitude.toString()
                     longitude = it.longitude.toString()
+                    saveLocationToJson(it.latitude, it.longitude)
                 }
             }
+        }
+    }
+
+    private fun saveLocationToJson(lat: Double, lon: Double) {
+        val jsonObject = JSONObject().apply {
+            put("latitude", lat)
+            put("longitude", lon)
+        }
+
+        val file = File(getExternalFilesDir(null), "gps_data.json")
+        try {
+            FileWriter(file).use { writer ->
+                writer.write(jsonObject.toString(4))  // JSON pretty print
+                writer.flush()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 }

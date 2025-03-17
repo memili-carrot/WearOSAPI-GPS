@@ -22,3 +22,5 @@ dependencyResolutionManagement {
 rootProject.name = "WearOSGPS"
 include(":app")
 include(":wearosgps")
+include(":app")
+ 
